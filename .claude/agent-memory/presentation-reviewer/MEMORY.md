@@ -1,0 +1,5 @@
+- [Demo & concept timing patterns](feedback_demo_timing.md) -- OUTLINE both demo % and concept sections can mismatch scripts; sum per-slide times
+- [Agentic Coding talk context](project_agentic_coding_talk.md) -- 88-min Slidev talk, 10 Parts (0-9), 43 slides, 6 demos, Part 3 no demo, Part 6/7 split
+- [Reviewer role boundaries](feedback_role_boundaries.md) -- Never create files directly; delegate to slides-creator or demo-code-generator via Tasks
+- [Demo reliability anti-patterns](feedback_demo_reliability_patterns.md) -- Never depend on AI errors; watch CLAUDE.md/Hook conflicts; Skills need improvisation checkpoints
+- [Cross-file sync check](feedback_cross_file_sync.md) -- Demo prompt changes must propagate to OUTLINE, scripts, PRESENTER_GUIDE, and demo-prepare

@@ -1,0 +1,2 @@
+- [Project Structure](project_structure.md) -- demo files use repo standard dirs, no sub-project nesting
+- [User Profile](user_profile.md) -- Alan is a presentation speaker building agentic coding talk demos
