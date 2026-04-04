@@ -213,7 +213,7 @@ layout: section
 ---
 
 # Part 2
-## 架構思維：Agentic Workflow 的五層演進
+## 架構思維：Claude Code 的五種功能
 
 <p class="opacity-60 mt-2">心智模型</p>
 
@@ -248,14 +248,14 @@ layout: section
 
 ---
 
-# 五層演進架構
+# Claude Code 的五種功能
 
 <div class="grid grid-cols-3 gap-3 mt-4">
 
 <div v-click class="p-3 rounded-lg border-2 border-blue/50 bg-blue/5">
   <div class="flex items-center gap-2 mb-1">
     <span class="text-xl">🧠</span>
-    <h3 class="font-bold text-sm">記憶 (Memory)</h3>
+    <h3 class="font-bold text-sm">CLAUDE.md</h3>
   </div>
   <code class="text-xs">CLAUDE.md</code>
   <p class="text-xs opacity-60 mt-1">確定性：永遠被載入，不依賴 AI 記憶</p>
@@ -264,7 +264,7 @@ layout: section
 <div v-click class="p-3 rounded-lg border-2 border-green/50 bg-green/5">
   <div class="flex items-center gap-2 mb-1">
     <span class="text-xl">⚡</span>
-    <h3 class="font-bold text-sm">技能 (Skills)</h3>
+    <h3 class="font-bold text-sm">Skills</h3>
   </div>
   <code class="text-xs">.claude/skills/</code>
   <p class="text-xs opacity-60 mt-1">機率性：將團隊 SOP 編碼化，提升一致性</p>
@@ -273,7 +273,7 @@ layout: section
 <div v-click class="p-3 rounded-lg border-2 border-red/50 bg-red/5">
   <div class="flex items-center gap-2 mb-1">
     <span class="text-xl">🛡️</span>
-    <h3 class="font-bold text-sm">守衛 (Governance)</h3>
+    <h3 class="font-bold text-sm">Hooks</h3>
   </div>
   <code class="text-xs">.claude/settings.json</code>
   <p class="text-xs opacity-60 mt-1">確定性：強制執行，不經詢問</p>
@@ -282,7 +282,7 @@ layout: section
 <div v-click class="p-3 rounded-lg border-2 border-purple/50 bg-purple/5">
   <div class="flex items-center gap-2 mb-1">
     <span class="text-xl">🌐</span>
-    <h3 class="font-bold text-sm">連結 (Connectivity)</h3>
+    <h3 class="font-bold text-sm">MCP</h3>
   </div>
   <code class="text-xs">MCP</code>
   <p class="text-xs opacity-60 mt-1">機率性：打破本機邊界，連接外部系統</p>
@@ -291,7 +291,7 @@ layout: section
 <div v-click class="p-3 rounded-lg border-2 border-orange/50 bg-orange/5">
   <div class="flex items-center gap-2 mb-1">
     <span class="text-xl">🤝</span>
-    <h3 class="font-bold text-sm">分工 (Delegation)</h3>
+    <h3 class="font-bold text-sm">Agents</h3>
   </div>
   <code class="text-xs">.claude/agents/</code>
   <p class="text-xs opacity-60 mt-1">機率性：角色專業化，任務委派與分工</p>
@@ -464,7 +464,7 @@ layout: section
 <div v-click class="text-center p-6 rounded-lg bg-primary/5 border border-primary/20">
   <div class="text-4xl mb-3">🎯</div>
   <h3 class="font-bold mb-2">一致性</h3>
-  <p class="text-sm opacity-70">每次執行結果格式相同，可預期</p>
+  <p class="text-sm opacity-70">統一輸出格式，降低個人差異與輸出變異</p>
 </div>
 
 <div v-click class="text-center p-6 rounded-lg bg-primary/5 border border-primary/20">
@@ -497,13 +497,11 @@ layout: section
 ### Skill：`slide-review`
 
 ```markdown
+---
+name: slide-review
+description: Use when reviewing slides.md for forbidden patterns (time info, audience labels). Trigger when user says "審查投影片" or "review slides".
+---
 # Slide Review
-
-## When to use (IMPORTANT)
-ALWAYS use this skill when:
-- User says "幫我審查投影片"
-- User says "review slides"
-- After modifying slides.md
 
 ## Steps
 1. Read slides.md line by line
@@ -559,11 +557,11 @@ ALWAYS use this skill when:
 ### Skill：`check-design-consistency`
 
 ```markdown
+---
+name: check-design-consistency
+description: Use after adding UI components or modifying styles. Scans for hardcoded colors and arbitrary spacing, suggests design token replacements.
+---
 # Check Design Consistency
-
-## When to use
-After adding UI components or modifying
-styles. Also use before PR reviews.
 
 ## Steps
 1. Scan for hardcoded color values (#xxx)
@@ -617,9 +615,12 @@ Checks security of the application.
 ### 好的寫法（觸發率高）
 
 ```markdown
-# Check Admin Security
-
-## When to use (IMPORTANT)
+---
+name: check-admin-security
+description: ALWAYS use when adding files under app/admin/, creating API routes, before PRs, or when user mentions "security". Max 250 chars.
+disable-model-invocation: false
+---
+## Steps
 ALWAYS use this skill when:
 - Adding any file under app/admin/
 - Creating new API routes
@@ -627,8 +628,11 @@ ALWAYS use this skill when:
 - When user mentions "security"
 ```
 
-<div class="mt-4 p-3 bg-green/10 border border-green/30 rounded text-sm">
-  AI 清楚知道觸發條件，主動執行。
+<div v-click class="mt-2 p-4 border border-gray/30 rounded bg-gray/5 text-sm space-y-2">
+
+- **預設**：Claude 自動判斷觸發，適合大多數情境
+- **`disable-model-invocation: true`**：只有用戶手動 `/skill-name` 才執行，適合 deploy、send-message 等有副作用的操作
+
 </div>
 
 </div>
@@ -671,7 +675,7 @@ layout: section
 
 ---
 
-# Hook 生命週期
+# Hook 生命週期範例
 
 <div class="flex justify-center mt-8">
   <div class="flex flex-col items-center gap-2 w-full max-w-lg">

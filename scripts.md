@@ -6,7 +6,7 @@
 | :--- | :--- | :--- | :--- |
 | **Part 0: 開場與破冰** | 6 min | Slide 1-4 | 痛點共鳴、設定目標 |
 | **Part 1: Claude Code 初探** | 5 min | Slide 5-8 | CLI 工具、對比 Chat UI、`.claude/` 目錄 |
-| **Part 2: 架構思維** | 6 min | Slide 9-11 | 五層架構（含確定性 vs. 機率性） |
+| **Part 2: 架構思維** | 6 min | Slide 9-11 | 五種功能（含確定性 vs. 機率性） |
 | **Part 3: CLAUDE.md** | 7 min | Slide 12-15 | 長期記憶、技術棧鎖定、邊界定義 |
 | **Part 4: Skills** | 14 min | Slide 16-21 + Demo 2 | SOP 封裝、Demo 2 (slide-review 品質審查) |
 | **Part 5: Hooks** | 13 min | Slide 22-28 + Demo 3 | 確定性守護、Demo 3 (PostToolUse 驗證 / PreToolUse 攔截) |
@@ -164,7 +164,7 @@ Claude Code 不一樣：它讀取 Repo 裡的設定檔，帶著你的**專案知
 ### [Slide 9] Part 2 章節頁：架構思維
 **時間：~15 秒**
 
-接下來，我要帶大家建立一個心智模型：Agentic Workflow 的五層演進架構。
+接下來，我要帶大家建立一個心智模型：Claude Code 的五種功能。
 
 > 過場：直接翻頁。
 
@@ -191,34 +191,34 @@ Claude Code 不一樣：它讀取 Repo 裡的設定檔，帶著你的**專案知
 
 **核心洞察：AI 的配置是基礎設施的一部分，不是個人資產。** 這句話請大家記住，是今天最重要的一個觀念。
 
-> 過場：接下來看這個基礎設施的五層架構。
+> 過場：接下來看這個基礎設施的五種功能。
 
 ---
 
-### [Slide 11] 五層演進架構（含確定性 vs. 機率性）
+### [Slide 11] 五種功能（含確定性 vs. 機率性）
 **時間：~3 分鐘**
 
 （依序點擊五個卡片）
 
 > [v-click 1] 記憶 (Memory)
 
-第一層：**記憶**。透過 `CLAUDE.md`，讓 AI 永遠知道你的專案、技術棧與邊界。這屬於**確定性**的範疇——每次對話必定載入，不依賴 AI 的記憶。
+第一個功能：**記憶**。透過 `CLAUDE.md`，讓 AI 永遠知道你的專案、技術棧與邊界。這屬於**確定性**的範疇——每次對話必定載入，不依賴 AI 的記憶。
 
 > [v-click 2] 技能 (Skills)
 
-第二層：**技能**。`.claude/skills/` 目錄下的指令包，把團隊 SOP 編碼化。這是**機率性**的——AI 根據描述判斷何時觸發，但好的 Skill Description 能大幅提高一致性。
+第二個功能：**技能**。`.claude/skills/` 目錄下的指令包，把團隊 SOP 編碼化。這是**機率性**的——AI 根據描述判斷何時觸發，但好的 Skill Description 能大幅提高一致性。
 
 > [v-click 3] 守衛 (Governance)
 
-第三層：**守衛**。`settings.json` 裡的 Hooks，不靠 AI 判斷，強制執行。確定性的底線——寫完檔案一定跑 Prettier，碰到 .env 一定攔截。
+第三個功能：**守衛**。`settings.json` 裡的 Hooks，不靠 AI 判斷，強制執行。確定性的底線——寫完檔案一定跑 Prettier，碰到 .env 一定攔截。
 
 > [v-click 4] 連結 (Connectivity)
 
-第四層：**連結**。MCP（Model Context Protocol）向外連接，打破本機邊界。AI 能直接查 GitHub Issue、讀資料庫、取 Monitoring 數據。這是機率性的——AI 判斷何時呼叫哪個外部工具。
+第四個功能：**連結**。MCP（Model Context Protocol）向外連接，打破本機邊界。AI 能直接查 GitHub Issue、讀資料庫、取 Monitoring 數據。這是機率性的——AI 判斷何時呼叫哪個外部工具。
 
 > [v-click 5] 分工 (Delegation)
 
-第五層：**分工**。定義在 `.claude/agents/` 的角色專屬 Agent，讓 AI 向內分工。Planner 只管計畫、Engineer 只管實作、QA 只管審核。同樣是機率性——AI 協調與委派。
+第五個功能：**分工**。定義在 `.claude/agents/` 的角色專屬 Agent，讓 AI 向內分工。Planner 只管計畫、Engineer 只管實作、QA 只管審核。同樣是機率性——AI 協調與委派。
 
 **MCP 向外連接，Agents 向內分工——方向不同，但都是在擴展 AI 的能力邊界。**
 
@@ -226,7 +226,7 @@ Claude Code 不一樣：它讀取 Repo 裡的設定檔，帶著你的**專案知
 
 記住這個原則：**「先建立底線（確定性），再追求加速（機率性）。」** 今天的演進路線就是按照這個順序走的。
 
-> 過場：好，讓我們從第一層「記憶」開始。
+> 過場：好，讓我們從第一個功能「記憶」開始。
 
 ---
 
@@ -1036,7 +1036,7 @@ A: MCP Server 本質是你自己部署和控制的服務。你可以限制它的
 A: 完全適用。甚至個人開發者更適合，因為你沒有同事幫你 Review AI 的產出，所以 Hooks 和 SDD 的確定性機制對你更重要。
 
 **Q: 除了 Claude Code，其他 AI 工具也能這樣做嗎？**
-A: `.claude/` 的概念是 Claude Code 特有的，但架構思維是通用的。任何支援配置化的 AI 工具都可以套用「記憶 → 技能 → 守衛 → 連結 → 分工」的五層模型。
+A: `.claude/` 的概念是 Claude Code 特有的，但架構思維是通用的。任何支援配置化的 AI 工具都可以套用「記憶 → 技能 → 守衛 → 連結 → 分工」這五種功能的框架。
 
 **Q: CLAUDE.md 如何與 .cursorrules 等其他工具的配置檔共存？**
 A: 兩者完全可以並存在同一個專案中，各自服務對應的 AI 工具。CLAUDE.md 是 Claude Code 專用的記憶與規則檔案，.cursorrules 則是其他 AI-assisted IDE 讀取的配置。團隊成員使用不同工具時，各自維護對應的配置檔即可，內容可以保持一致的規範，只是格式不同。

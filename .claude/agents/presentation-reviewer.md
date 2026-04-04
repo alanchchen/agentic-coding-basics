@@ -74,7 +74,7 @@ Demos must be **structurally reliable** — their narrative impact cannot depend
 ### Step 1: Gather Materials
 1. **Run `slide-review` skill first** — invoke the `/slide-review` skill to get a structured quality report on slides.md before doing any manual analysis. Treat its output as a pre-flight check. Any violations it finds (forbidden time info, audience labels) are automatically Criterion 5 findings — record them directly without re-scanning manually.
 2. Read OUTLINE.md, slides.md, and scripts.md in full
-3. Scan `scripts/` and `src/` for demo-related code; check that every Demo mentioned in OUTLINE.md has corresponding runnable code
+3. Scan `scripts/` for demo-related scripts; check that every Demo mentioned in OUTLINE.md has corresponding setup/reset scripts
 4. Identify and read any additional files referenced within these documents
 5. Build a mental model of the complete presentation — slides, scripts, and demo code together
 

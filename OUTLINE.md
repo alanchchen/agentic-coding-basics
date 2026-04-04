@@ -22,17 +22,16 @@
 
 ---
 
-## Part 2｜架構思維：Agentic Workflow 的五層演進
+## Part 2｜Claude Code 的五種功能
 > 6 min
 
 - **為什麼 `.claude/` 應該跟著 Git 走**：設定即代碼，共同維護，版本可追溯——這才是讓 AI 成為團隊成員而非個人玩具的關鍵。
-- **五層架構模型**：
-  1. **記憶 (Memory)**：`CLAUDE.md` - 專案知識與開發規範。
-  2. **技能 (Skills)**：`Skills` - 將重複的 SOP 編碼化為工具。
-  3. **守衛 (Governance)**：`Hooks` - 確保 AI 行為符合預期的自動化檢查。
-  4. **連結 (Connectivity)**：`MCP` - 打破本機邊界，連接 GitHub、Database、Monitoring 等外部系統。
-  5. **分工 (Delegation)**：`Agents` - 定義在 `.claude/agents/`，實現角色專業化與任務委派。
-- **實戰敘事弧線**：記憶 → 技能 → 守衛 → MCP 外部連接 → Agents 專業分工 → SDD 規格對齊。
+- **五種功能**：
+  1. `CLAUDE.md` - 專案知識與開發規範
+  2. `Skills` - 將重複的 SOP 編碼化為可呼叫的工具
+  3. `Hooks` - 不依賴 AI 判斷的自動化守衛
+  4. `MCP` - 打破本機邊界，連接 GitHub、Database、Monitoring 等外部系統
+  5. `Agents` - 定義在 `.claude/agents/`，角色專業化與任務委派
 
 ---
 
@@ -79,6 +78,7 @@
 
 - **MCP 核心概念**：Model Context Protocol，讓 AI 具備「特務」身分，主動連接 GitHub、Database、Monitoring 等外部系統。
 - **為什麼重要**：AI 不再只能看 Codebase，能讀取 Issue、查詢 DB、觀察 Metrics，形成完整的情境感知。
+- **三種 Scope**：`local`（預設，只限當前專案）、`project`（.mcp.json 進 Git，團隊共享）、`user`（~/.claude/，跨所有專案）。
 - **案例分享**：GitHub MCP 串接，AI 自動讀取 Issue 並對應代碼變更。
 - **【Demo】GitHub MCP 跨工具協作**（約 3 分鐘）：
   - 透過 GitHub MCP 查詢近期的 Open Issue 清單。
@@ -89,9 +89,10 @@
 ## Part 7｜Subagents：角色分工與任務委派
 > 9 min (Concept: 4m / **Demo: 5m**)
 
-- **Subagents 核心概念**：定義在 `.claude/agents/`，每個 Agent 有獨立的系統提示與專注領域。
+- **Subagents 核心概念**：定義在 `.claude/agents/`，每個 Agent 有獨立的系統提示與專注領域，在獨立的 context window 中執行。
 - **與 MCP 的本質差異**：MCP 向外連接（外部系統），Agents 向內分工（內部角色）。
-- **實作模式**：主 Agent 委派任務，子 Agent 專注執行，彼此分工而非互相干擾。
+- **重要限制**：Subagent 不能再生成子 Subagent（無巢狀委派）。委派鏈只有一層：主 Agent → Subagent。
+- **實作模式**：主 Agent 委派任務，子 Agent 專注執行，可透過 `tools`/`disallowedTools` frontmatter 精確控制工具存取範圍。
 - **【Demo】用這場演講本身示範 Subagents**（約 5 分鐘）：
   - 這場演講的 `.claude/agents/` 就定義了 `presentation-reviewer`、`slides-creator`、`demo-code-generator` 三個專責 Agent。
   - 現場觸發 `presentation-reviewer` 審查剛才修改的投影片，展示 Agent 自動讀取素材並產出結構化報告。
@@ -128,11 +129,11 @@
 |------|------|------|-----------|
 | Part 0 | 開場與痛點 | 6 min | - |
 | Part 1 | Claude Code 初探 | 5 min | - |
-| Part 2 | 五層架構 | 6 min | - |
-| Part 3 | 記憶 (CLAUDE.md) | 7 min | - |
-| Part 4 | 技能 (Skills) | 14 min | 43% (6m) |
-| Part 5 | 守衛 (Hooks) | 13 min | 38% (5m) |
-| Part 6 | MCP 外部連接 | 7 min | 43% (3m) |
-| Part 7 | Subagents 分工 | 9 min | 56% (5m) |
+| Part 2 | 五種功能 | 6 min | - |
+| Part 3 | CLAUDE.md | 7 min | - |
+| Part 4 | Skills | 14 min | 43% (6m) |
+| Part 5 | Hooks | 13 min | 38% (5m) |
+| Part 6 | MCP | 7 min | 43% (3m) |
+| Part 7 | Agents | 9 min | 56% (5m) |
 | Part 8 | SDD 規格驅動 | 12 min | 42% (5m) |
 | Part 9 | 結語 + Q&A | 7 min | - |
