@@ -1,0 +1,21 @@
+{
+  "name": "agentic-coding-basics",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "dev": "slidev",
+    "build": "slidev build",
+    "export": "slidev export"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.30.3",
+  "devDependencies": {
+    "@slidev/cli": "^52.14.1",
+    "@slidev/theme-seriph": "^0.25.0",
+    "@types/node": "^22",
+    "shiki": "^1.0.0",
+    "typescript": "^5"
+  }
+}
