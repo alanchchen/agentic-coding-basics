@@ -39,7 +39,7 @@ scripts/
 
 ## Slides 內容規則（CRITICAL）
 
-### 禁止出現在 slides.md 的內容
+### 禁止出現在 slides.md 的內容，除非使用者強制要求
 - 時間資訊（如「8 min」、「90 分鐘」、「預計 X 分鐘」）
 - 受眾標籤（如「軟體工程師」、「Team Lead」、「Tech Lead」）
 - 任何 OUTLINE.md 的規劃備註或編輯資訊

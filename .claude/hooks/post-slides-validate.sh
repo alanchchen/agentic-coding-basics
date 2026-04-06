@@ -6,8 +6,11 @@
 #   0 = 繼續（驗證通過或非 slides.md）
 #   1 = 警告但繼續（驗證失敗，提示違規）
 
-# Get the file path from Claude's environment
-FILE_PATH="${CLAUDE_TOOL_INPUT_FILE_PATH:-}"
+# Read tool input from stdin (Claude Code passes JSON via stdin)
+INPUT=$(cat)
+
+# Parse file path from JSON
+FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
 
 # Only validate when slides.md is modified
 if [ -z "$FILE_PATH" ]; then

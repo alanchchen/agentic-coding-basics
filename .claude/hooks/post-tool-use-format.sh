@@ -6,7 +6,11 @@
 #   0 = 繼續（格式化成功或非目標檔案）
 #   1 = 警告但繼續（格式化失敗）
 
-FILE_PATH="${CLAUDE_TOOL_INPUT_FILE_PATH:-}"
+# Read tool input from stdin (Claude Code passes JSON via stdin)
+INPUT=$(cat)
+
+# Parse file path from JSON
+FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
 
 if [ -z "$FILE_PATH" ]; then
   exit 0

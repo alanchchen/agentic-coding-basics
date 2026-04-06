@@ -6,7 +6,11 @@
 #   0 = 繼續執行（檔案安全）
 #   2 = 阻擋並顯示錯誤（檔案為敏感檔案）
 
-FILE_PATH="${CLAUDE_TOOL_INPUT_FILE_PATH:-}"
+# Read tool input from stdin (Claude Code passes JSON via stdin)
+INPUT=$(cat)
+
+# Parse file path from JSON
+FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
 
 if [ -z "$FILE_PATH" ]; then
   exit 0
