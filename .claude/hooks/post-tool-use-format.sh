@@ -21,14 +21,14 @@ if echo "$FILE_PATH" | grep -qE '\.(ts|tsx|js|jsx|json|css|md|html|yaml|yml)$'; 
   if command -v npx &> /dev/null; then
     npx prettier --write "$FILE_PATH" 2>/dev/null
     if [ $? -eq 0 ]; then
-      echo "[FORMAT] Prettier applied to $FILE_PATH"
+      echo "[FORMAT] Prettier applied to $FILE_PATH" >&2
       exit 0
     else
-      echo "[WARN] Prettier failed for $FILE_PATH (continuing)"
+      echo "[WARN] Prettier failed for $FILE_PATH (continuing)" >&2
       exit 1
     fi
   else
-    echo "[WARN] npx not found, skipping format"
+    echo "[WARN] npx not found, skipping format" >&2
     exit 1
   fi
 fi

@@ -17,12 +17,12 @@ if [ -z "$FILE_PATH" ]; then
 fi
 
 if echo "$FILE_PATH" | grep -qE '(\.env($|\.)|secrets|\.secret|credentials\.(json|yaml|yml|toml|xml|conf))'; then
-  echo "BLOCKED: Cannot modify sensitive file: $FILE_PATH"
-  echo ""
-  echo "This file is protected by the security hook."
-  echo "Sensitive files (.env, secrets, credentials.*) cannot be modified by AI."
-  echo ""
-  echo "If you need to update this file, please do it manually."
+  echo "BLOCKED: Cannot modify sensitive file: $FILE_PATH" >&2
+  echo "" >&2
+  echo "This file is protected by the security hook." >&2
+  echo "Sensitive files (.env, secrets, credentials.*) cannot be modified by AI." >&2
+  echo "" >&2
+  echo "If you need to update this file, please do it manually." >&2
   exit 2
 fi
 

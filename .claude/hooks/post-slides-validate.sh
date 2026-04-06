@@ -29,12 +29,12 @@ if [ -f "$VALIDATE_SCRIPT" ]; then
   bash "$VALIDATE_SCRIPT"
   RESULT=$?
   if [ "$RESULT" -ne 0 ]; then
-    echo ""
-    echo "投影片品質驗證未通過，請修正上述違規內容。"
+    echo "" >&2
+    echo "投影片品質驗證未通過，請修正上述違規內容。" >&2
     exit 1
   fi
 else
-  echo "[WARN] validate-slides.sh not found at $VALIDATE_SCRIPT"
+  echo "[WARN] validate-slides.sh not found at $VALIDATE_SCRIPT" >&2
   exit 0
 fi
 
