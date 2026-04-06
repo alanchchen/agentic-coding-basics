@@ -467,31 +467,30 @@ layout: section
   「先建立底線（確定性），再追求加速（機率性）。」
 </div>
 
-
 <!--
 **時間：~3 分鐘**
 
 （依序點擊五個卡片）
 
-> [v-click 1] 記憶 (Memory)
+> [v-click 1] CLAUDE.md (Memory)
 
 第一個功能：**記憶**。透過 `CLAUDE.md`，讓 AI 永遠知道你的專案、技術棧與邊界。這屬於**確定性**的範疇——每次對話必定載入，不依賴 AI 的記憶。
 
-> [v-click 2] 技能 (Skills)
+> [v-click 2] Skills
 
-第二個功能：**技能**。`.claude/skills/` 目錄下的指令包，把團隊 SOP 編碼化。這是**機率性**的——AI 根據描述判斷何時觸發，但好的 Skill Description 能大幅提高一致性。
+第二個功能：**Skills**。`.claude/skills/` 目錄下的指令包，把團隊 SOP 編碼化。這是**機率性**的——AI 根據描述判斷何時觸發，但好的 Skill Description 能大幅提高一致性。
 
-> [v-click 3] 守衛 (Governance)
+> [v-click 3] Hooks
 
-第三個功能：**守衛**。`settings.json` 裡的 Hooks，不靠 AI 判斷，強制執行。確定性的底線——寫完檔案一定跑 Prettier，碰到 .env 一定攔截。
+第三個功能：**Hooks**。`settings.json` 裡的 Hooks，不靠 AI 判斷，強制執行。確定性的底線——寫完檔案一定跑 Prettier，碰到 .env 一定攔截。
 
-> [v-click 4] 連結 (Connectivity)
+> [v-click 4] MCP
 
-第四個功能：**連結**。MCP（Model Context Protocol）向外連接，打破本機邊界。AI 能直接查 GitHub Issue、讀資料庫、取 Monitoring 數據。這是機率性的——AI 判斷何時呼叫哪個外部工具。
+第四個功能：**MCP**。MCP（Model Context Protocol）向外連接，打破本機邊界。AI 能直接查 GitHub Issue、讀資料庫、取 Monitoring 數據。這是機率性的——AI 判斷何時呼叫哪個外部工具。
 
-> [v-click 5] 分工 (Delegation)
+> [v-click 5] Subagents
 
-第五個功能：**分工**。定義在 `.claude/agents/` 的角色專屬 Agent，讓 AI 向內分工。Planner 只管計畫、Engineer 只管實作、QA 只管審核。同樣是機率性——AI 協調與委派。
+第五個功能：**Subagents**。定義在 `.claude/agents/` 的角色專屬 Agent，讓 AI 向內分工。Planner 只管計畫、Engineer 只管實作、QA 只管審核。同樣是機率性——AI 協調與委派。
 
 **MCP 向外連接，Agents 向內分工——方向不同，但都是在擴展 AI 的能力邊界。**
 
@@ -501,6 +500,7 @@ layout: section
 
 > 過場：好，讓我們從第一個功能「記憶」開始。
 -->
+
 ---
 layout: section
 ---
@@ -1295,75 +1295,71 @@ Hook 的生命週期很簡單，只有三個節點：
 
 Exit Code 的控制邏輯：Exit 0 表示「繼續執行」、Exit 2 表示「阻擋並顯示錯誤訊息」、其他 Exit Code 表示「顯示警告但繼續」。這讓你可以精細控制 Hook 的嚴重程度。
 
-> 過場：最後看一個進階延伸應用。
+> 過場：剛才看了 PreToolUse 與 PostToolUse，但 Hooks 的生命週期遠不止這兩個。讓我們看一下完整的事件表。
 -->
 ---
 
-# 延伸應用：Worktree 自動管理
+# Hooks 常用生命週期參考
 
-<div class="mt-4">
+<div class="grid grid-cols-3 gap-3 mt-4 text-xs">
 
-**場景**：多功能並行開發，每個 Feature 需要獨立環境。
-
+<div class="space-y-2">
+  <div class="font-bold text-sm opacity-70 mb-2">Session / 對話</div>
+  <div class="p-2 rounded bg-blue/10 border border-blue/20"><code>SessionStart</code> — 工作階段開始</div>
+  <div class="p-2 rounded bg-blue/10 border border-blue/20"><code>UserPromptSubmit</code> — 送出 prompt 前</div>
+  <div class="p-2 rounded bg-blue/10 border border-blue/20"><code>Stop</code> / <code>StopFailure</code> — 回應結束</div>
+  <div class="p-2 rounded bg-blue/10 border border-blue/20"><code>SessionEnd</code> — 工作階段結束</div>
+  <div class="p-2 rounded bg-blue/10 border border-blue/20"><code>PreCompact</code> / <code>PostCompact</code> — 壓縮前後</div>
 </div>
 
-<div class="grid grid-cols-2 gap-6 mt-4">
-
-<div v-click>
-
-```bash
-# PostToolUse Hook Script
-# 當偵測到新 branch 建立時自動設置環境
-
-if [[ "$CLAUDE_TOOL_NAME" == "Bash" ]]; then
-  if echo "$CLAUDE_TOOL_INPUT" | \
-     grep -q "git checkout -b"; then
-    # 自動建立 worktree
-    # 自動安裝依賴
-    # 自動設置環境變數
-    setup_worktree.sh
-  fi
-fi
-```
-
+<div class="space-y-2">
+  <div class="font-bold text-sm opacity-70 mb-2">Tool / Subagent</div>
+  <div class="p-2 rounded bg-red/10 border border-red/20"><code>PreToolUse</code> ⛔ — 工具執行前</div>
+  <div class="p-2 rounded bg-orange/10 border border-orange/20"><code>PermissionRequest</code> ⛔ — 權限對話框</div>
+  <div class="p-2 rounded bg-orange/10 border border-orange/20"><code>PermissionDenied</code> — 被拒絕時</div>
+  <div class="p-2 rounded bg-green/10 border border-green/20"><code>PostToolUse</code> — 工具成功後</div>
+  <div class="p-2 rounded bg-yellow/10 border border-yellow/20"><code>PostToolUseFailure</code> — 工具失敗後</div>
+  <div class="p-2 rounded bg-purple/10 border border-purple/20"><code>SubagentStart</code> / <code>SubagentStop</code></div>
 </div>
 
-<div v-click class="flex flex-col justify-center">
-
-**好處：**
-
-<div class="space-y-3">
-  <div class="p-3 bg-blue/10 border border-blue/30 rounded text-sm">
-    開發者不需要手動切換環境
-  </div>
-  <div class="p-3 bg-blue/10 border border-blue/30 rounded text-sm">
-    AI 可以並行處理多個任務
-  </div>
-  <div class="p-3 bg-blue/10 border border-blue/30 rounded text-sm">
-    環境設置錯誤率降為零
-  </div>
+<div class="space-y-2">
+  <div class="font-bold text-sm opacity-70 mb-2">Config / File / 其他</div>
+  <div class="p-2 rounded bg-gray/10 border border-gray/20"><code>InstructionsLoaded</code> — CLAUDE.md 載入</div>
+  <div class="p-2 rounded bg-gray/10 border border-gray/20"><code>ConfigChange</code> ⛔ — 設定變更</div>
+  <div class="p-2 rounded bg-gray/10 border border-gray/20"><code>FileChanged</code> — 監聽檔案變動</div>
+  <div class="p-2 rounded bg-gray/10 border border-gray/20"><code>CwdChanged</code> — 工作目錄切換</div>
+  <div class="p-2 rounded bg-gray/10 border border-gray/20"><code>WorktreeCreate</code> / <code>WorktreeRemove</code></div>
+  <div class="p-2 rounded bg-gray/10 border border-gray/20"><code>TaskCreated</code> ⛔ / <code>TaskCompleted</code> ⛔</div>
 </div>
 
 </div>
+
+<div class="grid grid-cols-3 gap-3 mt-4 text-xs">
+  <div class="p-3 bg-green/10 border border-green/30 rounded"><b>Exit 0</b>：繼續執行，stdout 可回傳 JSON 給 Claude</div>
+  <div class="p-3 bg-red/10 border border-red/30 rounded"><b>Exit 2</b>：⛔ 阻擋（stderr 顯示為錯誤），依事件不同效果不同</div>
+  <div class="p-3 bg-yellow/10 border border-yellow/30 rounded"><b>其他</b>：警告但繼續執行，stderr 顯示在 verbose 模式</div>
 </div>
 
+<div class="mt-3 text-xs opacity-50 text-right">
+  完整文件：<code>https://code.claude.com/docs/en/hooks</code>
+</div>
 
 <!--
-**時間：~1 分 30 秒**
+（說明這一頁的用途）
 
-（說明場景）
+剛才的兩個案例只展示了最常用的兩種事件——PreToolUse 和 PostToolUse。但 Hooks 的生命週期遠比這個豐富。這頁是完整的事件參考表。
 
-這是一個選用的進階案例。場景是：你的團隊需要同時開發多個 Feature，每個 Feature 需要獨立的環境。
+左欄是 Session 和對話層級的事件：從工作階段開始到結束、Prompt 提交前的攔截點，以及 Stop/StopFailure 可以讓你在 AI 回應結束時做些事情。
 
-> [v-click 1] 左欄 Script
+中欄是最常用的 Tool 和 Subagent 事件：PreToolUse 可以阻斷工具執行、PermissionRequest 可以控制權限對話框、PostToolUse 做後置驗證。Subagent 也有對應的 Start/Stop 事件。
 
-透過 PostToolUse Hook，我們可以偵測 AI 是否執行了 `git checkout -b` 建立新分支。如果是，就自動觸發 `setup_worktree.sh` 腳本——自動建立 Git Worktree、安裝依賴、設置環境變數。
+右欄是比較進階的：InstructionsLoaded 讓你在 CLAUDE.md 被載入時做事；FileChanged 可以監聽特定檔案的磁碟變動；WorktreeCreate 甚至可以完全接管 Worktree 的建立邏輯。
 
-> [v-click 2] 右欄好處
+⛔ 標記代表這個事件在 Exit 2 時會阻擋對應操作。
 
-好處是：開發者不需要手動切換環境、AI 可以並行處理多個任務、環境設置錯誤率降為零。
+Exit Code 的行為記住三個：0 繼續、2 阻擋、其他警告。
 
-這個例子展示了 Hooks 的潛力不只是「防守」，還可以做「自動化設置」。
+完整文件在底部的 URL，裡面有每個事件的 input fields 和 JSON output 格式。
 
 > 過場：好，到這裡我們已經搞定了內部的記憶、技能、守衛三層。接下來要打破本機的圍牆。
 -->
