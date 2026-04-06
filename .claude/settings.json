@@ -26,15 +26,6 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/post-tool-use-format.sh"
-          }
-        ]
-      },
-      {
-        "matcher": "Update|Write|Edit|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
             "command": "bash .claude/hooks/post-slides-validate.sh"
           }
         ]
@@ -45,10 +36,7 @@
     "github": {
       "type": "stdio",
       "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-github"
-      ],
+      "args": ["-y", "@modelcontextprotocol/server-github"],
       "env": {
         "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
       }
