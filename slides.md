@@ -1000,7 +1000,7 @@ layout: center
 class: text-center
 ---
 
-# Demo 2
+# Demo 1
 ## Skills 實作
 
 <div class="mt-8 text-6xl">⚡</div>
@@ -1011,7 +1011,7 @@ class: text-center
 <!--
 **時間：過場 ~15 秒**
 
-（螢幕出現 Demo 2 佔位頁）
+（螢幕出現 Demo 1 佔位頁）
 
 好，第二個 Demo。我們要用這場演講自己的 `slide-review` Skill，現場審查 slides.md 的品質。大約 6 分鐘。
 
@@ -1368,7 +1368,7 @@ layout: center
 class: text-center
 ---
 
-# Demo 3
+# Demo 2
 ## Hooks 自動化守衛實戰
 
 <div class="mt-8 text-6xl">🛡️</div>
@@ -1379,7 +1379,7 @@ class: text-center
 <!--
 **時間：過場 ~15 秒**
 
-（螢幕出現 Demo 3 佔位頁）
+（螢幕出現 Demo 2 佔位頁）
 
 第三個 Demo。我們要用這場演講的 slides.md 作為目標——觸發 PostToolUse 驗證守衛，以及嘗試寫入時間資訊觸發 PreToolUse 攔截。大約 5 分鐘。
 
@@ -1497,7 +1497,7 @@ layout: center
 class: text-center
 ---
 
-# Demo 4
+# Demo 3
 ## MCP 跨工具協作
 
 <div class="mt-8 text-6xl">🌐</div>
@@ -1508,7 +1508,7 @@ class: text-center
 <!--
 **時間：過場 ~15 秒**
 
-（螢幕出現 Demo 4 佔位頁）
+（螢幕出現 Demo 3 佔位頁）
 
 第四個 Demo，大約 3 分鐘。我們用 GitHub MCP 來展示 AI 如何打破本機限制，直接查詢外部系統的資訊。
 
@@ -1520,7 +1520,7 @@ class: text-center
 
 1. 展示 MCP 設定：
    ```bash
-   ./scripts/demo4-setup.sh show
+   ./scripts/demo3-setup.sh show
    ```
 
 2. 使用 GitHub MCP：
@@ -1759,7 +1759,7 @@ layout: center
 class: text-center
 ---
 
-# Demo 5
+# Demo 4
 ## Subagents 角色分工實戰
 
 <div class="mt-8 text-6xl">🤝</div>
@@ -1770,7 +1770,7 @@ class: text-center
 <!--
 **時間：過場 ~15 秒**
 
-（螢幕出現 Demo 5 佔位頁）
+（螢幕出現 Demo 4 佔位頁）
 
 第五個 Demo，約 5 分鐘。這場演講的 `.claude/agents/` 目錄已經定義了真實運行的 Subagents。我們現場觸發它們。
 
@@ -2008,82 +2008,6 @@ OpenSpec 是一套官方工具集，由四個 Skills 組成：
 **`archive`** — 完成即歸檔。每一個 change 都有完整記錄，未來可追溯，團隊可審查。
 
 > 過場：理論夠了，我們來看真實的操作。
--->
----
-layout: center
-class: text-center
----
-
-# Demo 6
-## OpenSpec 現場實戰
-
-<div class="mt-8 text-5xl font-mono text-primary">opsx:propose → opsx:apply</div>
-
-<div class="mt-6 text-xl opacity-70">建立 Proposal → 現場執行 → 新投影片即時出現</div>
-
-
-<!--
-**時間：過場 ~15 秒**
-
-（螢幕出現 Demo 6 佔位頁）
-
-最後一個 Demo，我要用 OpenSpec 現場做一件事——修改這場演講本身的投影片。
-
-> 過場：切換到終端機。
-
-—
-
-> **時間結構說明（僅供講者參考）：**
-> - Step 1：展示已備好的 Proposal（~1 分鐘）
-> - Step 2：執行 opsx:apply，即時產出新投影片（~3 分鐘，含 AI 回應）
-> - Step 3：收尾金句（~30 秒）
-
-—
-
-#### Step 1：展示已生成的 Proposal 【目標時間：~1 分鐘】
-
-在 Demo 之前，我已經用 `opsx:propose` 建立了一個 Proposal。需求是：
-
-> 「在這場演講的投影片中，新增一張介紹 OpenSpec 四個 Skills 的頁面。」
-
-讓我們打開這份 Proposal：
-
-（展示 Proposal 文件，指出關鍵欄位）
-
-看這份文件——**Proposal** 定義了為什麼要加這張投影片：讓觀眾在 Demo 之前先理解工具的全貌。**Design** 說明這張投影片的結構：四個 Skills 各佔一個卡片，用 v-click 漸進揭露。**Tasks** 只有一項：在 slides.md 中新增對應的投影片 Markdown。
-
-這就是 `opsx:propose` 的價值——一條需求進去，完整規格出來，人機雙方在動手之前先對齊。
-
-—
-
-#### Step 2：執行 opsx:apply，投影片即時出現 【目標時間：~3 分鐘（含 AI 回應）】
-
-現在我們執行 `opsx:apply`：
-
-（在終端機執行 opsx:apply，選擇對應的 Proposal）
-
-注意 AI 在做什麼——它不是憑感覺開始寫，而是按照 Proposal 的 Tasks 逐步執行。它知道要去哪個位置插入、插入什麼格式、v-click 怎麼排。
-
-（等待 AI 完成，投影片呈現在螢幕上）
-
-> 過場：請看螢幕。
-
-—
-
-#### Step 3：收尾金句 【目標時間：~30 秒】
-
-你剛才看到的這張投影片，是在這場演講進行中被加進來的。
-
-這不是事先準備好的魔術——Proposal 定義了「做什麼」，`opsx:apply` 按照合約執行。需求清楚，執行不走鐘。
-
-**這就是規格驅動的威力。**
-
-—
-
-**備用方案（Demo 失敗或時間不足時）：**
-展示已準備好的 Proposal 文件，口述四個階段的價值：「在實際操作中，`opsx:propose` 自動生成這份文件，`opsx:apply` 按照 Tasks 一步步執行。最終的成果不是 AI 猜出來的，而是合約驅動出來的。」
-
-> 過場：進入結語。
 -->
 ---
 layout: section

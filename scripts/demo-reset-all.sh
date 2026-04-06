@@ -14,29 +14,24 @@ echo "  Agentic Coding Basics - Demo Reset"
 echo "========================================="
 echo ""
 
-# Demo 2: Skills
-echo "[1/4] 重置 Demo 2 (Skills - slide-review)..."
+# Demo 1: Skills
+echo "[1/4] 重置 Demo 1 (Skills - slide-review)..."
+"$SCRIPTS_DIR/demo1-setup.sh" reset 2>/dev/null || true
+echo ""
+
+# Demo 2: Hooks
+echo "[2/4] 重置 Demo 2 (Hooks - validate-slides)..."
 "$SCRIPTS_DIR/demo2-setup.sh" reset 2>/dev/null || true
 echo ""
 
-# Demo 3: Hooks
-echo "[2/4] 重置 Demo 3 (Hooks - validate-slides)..."
-"$SCRIPTS_DIR/demo3-setup.sh" reset 2>/dev/null || true
-echo ""
-
-# Demo 4: MCP (no persistent state to clean)
-echo "[3/4] 重置 Demo 4 (MCP)..."
+# Demo 3: MCP (no persistent state to clean)
+echo "[3/4] 重置 Demo 3 (MCP)..."
 echo "[OK] MCP Demo 無需清理"
 echo ""
 
-# Demo 5: Subagents (no persistent state to clean)
-echo "[4/5] 重置 Demo 5 (Subagents)..."
+# Demo 4: Subagents (no persistent state to clean)
+echo "[4/5] 重置 Demo 4 (Subagents)..."
 echo "[OK] Subagents Demo 無需清理"
-echo ""
-
-# Demo 6: OpenSpec
-echo "[5/5] 重置 Demo 6 (OpenSpec)..."
-"$SCRIPTS_DIR/demo5-setup.sh" reset 2>/dev/null || true
 echo ""
 
 echo ""

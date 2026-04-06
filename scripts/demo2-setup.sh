@@ -1,105 +1,94 @@
 #!/usr/bin/env bash
-# Demo 2 Setup: Skills (slide-review) 實作
-# 用途：在 slides.md 植入刻意違規以供 Demo 演示，或還原乾淨狀態
+# Demo 1 Setup: Hooks 自動化守衛
+# 用途：確保 Demo 1 的環境就緒（hooks 設定、slides.md 乾淨）
 #
 # 使用方式：
-#   ./scripts/demo2-setup.sh inject    # 植入違規內容
-#   ./scripts/demo2-setup.sh reset     # 移除違規，還原乾淨狀態
-#   ./scripts/demo2-setup.sh status    # 檢查目前是否有違規植入
+#   ./scripts/demo1-setup.sh reset    # 確保 slides.md 乾淨（清除 demo2 injection）
+#   ./scripts/demo1-setup.sh check    # 驗證 hooks 設定是否正確
 
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+SETTINGS_FILE="$REPO_DIR/.claude/settings.json"
 SLIDES_FILE="$REPO_DIR/slides.md"
-
-# The marker we inject — a speaker note containing time info
-# We inject it into the Demo 2 placeholder slide's section
-INJECTION_MARKER="<!-- demo2-injection -->"
-INJECTION_LINE="> 適合 90 分鐘場次"
-INJECTION_FULL="${INJECTION_LINE} ${INJECTION_MARKER}"
-
-# Target: the line after the Demo 2 placeholder slide description
-# We look for the unique line in the Demo 2 slide
-TARGET_LINE="用 slide-review Skill 現場審查這場演講的投影片"
+VALIDATE_SCRIPT="$REPO_DIR/scripts/validate-slides.sh"
 
 case "${1:-help}" in
-  inject)
-    # Idempotent: check if already injected
-    if grep -q "$INJECTION_MARKER" "$SLIDES_FILE" 2>/dev/null; then
-      echo "[OK] 違規內容已存在，無需重複植入"
-      grep -n "$INJECTION_MARKER" "$SLIDES_FILE"
-      exit 0
-    fi
+  reset)
+    # Step 1: Clean up any demo2 injection leftover
+    echo "=== 清理 Demo 1 遺留 ==="
+    bash "$REPO_DIR/scripts/demo1-setup.sh" reset
 
-    # Find the target line and inject after it
-    if ! grep -q "$TARGET_LINE" "$SLIDES_FILE"; then
-      echo "[ERROR] 找不到目標行: $TARGET_LINE"
-      echo "slides.md 結構可能已變更，請手動檢查"
+    # Step 2: Run validate-slides.sh to confirm slides.md is clean
+    echo ""
+    echo "=== 驗證 slides.md 狀態 ==="
+    if bash "$VALIDATE_SCRIPT"; then
+      echo "[OK] slides.md 已乾淨，Demo 1 可以開始"
+    else
+      echo "[WARN] slides.md 仍有違規內容，請手動檢查"
       exit 1
     fi
-
-    # Use sed to insert after the target line
-    if [[ "$(uname)" == "Darwin" ]]; then
-      sed -i '' "/$TARGET_LINE/a\\
-\\
-${INJECTION_FULL}
-" "$SLIDES_FILE"
-    else
-      sed -i "/$TARGET_LINE/a\\\\n${INJECTION_FULL}" "$SLIDES_FILE"
-    fi
-
-    echo "[INJECT] 已在 slides.md 植入違規內容："
-    grep -n "$INJECTION_MARKER" "$SLIDES_FILE"
-    echo ""
-    echo "違規內容：$INJECTION_LINE"
-    echo "用途：Demo 2 展示 slide-review Skill 偵測此違規"
     ;;
 
-  reset)
-    # Idempotent: remove injection if present
-    if grep -q "$INJECTION_MARKER" "$SLIDES_FILE" 2>/dev/null; then
-      if [[ "$(uname)" == "Darwin" ]]; then
-        sed -i '' "/$INJECTION_MARKER/d" "$SLIDES_FILE"
+  check)
+    echo "=== 檢查 Hooks 設定 ==="
+    ERRORS=0
+
+    # Check settings.json exists
+    if [ ! -f "$SETTINGS_FILE" ]; then
+      echo "[FAIL] .claude/settings.json 不存在"
+      ERRORS=$((ERRORS + 1))
+    else
+      echo "[OK] .claude/settings.json 存在"
+
+      # Check PostToolUse hook for slides validation
+      if grep -q "post-slides-validate.sh" "$SETTINGS_FILE"; then
+        echo "[OK] PostToolUse hook: post-slides-validate.sh 已設定"
       else
-        sed -i "/$INJECTION_MARKER/d" "$SLIDES_FILE"
+        echo "[FAIL] PostToolUse hook: 找不到 post-slides-validate.sh"
+        ERRORS=$((ERRORS + 1))
       fi
-      # Also clean up any trailing blank line left by the injection
-      if [[ "$(uname)" == "Darwin" ]]; then
-        sed -i '' '/^$/N;/^\n$/d' "$SLIDES_FILE"
+
+      # Check PreToolUse hook for slides.md time blocking
+      if grep -q "BLOCKED.*Time information" "$SETTINGS_FILE" || grep -q "pre-slides-guard" "$SETTINGS_FILE"; then
+        echo "[OK] PreToolUse hook: slides.md 時間攔截已設定"
+      else
+        echo "[FAIL] PreToolUse hook: 找不到 slides.md 時間攔截設定"
+        ERRORS=$((ERRORS + 1))
       fi
-      echo "[CLEAN] 已移除植入的違規內容"
-    else
-      echo "[OK] slides.md 沒有植入的違規內容，無需清理"
     fi
 
-    # Also clean up any demo-generated report files
-    for f in "$REPO_DIR/slide-review-report.md" "$REPO_DIR/docs/slide-review-report.md"; do
-      if [ -f "$f" ]; then
-        rm "$f"
-        echo "[CLEAN] 已刪除 $f"
+    # Check validate-slides.sh exists and is executable
+    if [ -f "$VALIDATE_SCRIPT" ]; then
+      echo "[OK] scripts/validate-slides.sh 存在"
+      if [ -x "$VALIDATE_SCRIPT" ]; then
+        echo "[OK] scripts/validate-slides.sh 可執行"
+      else
+        echo "[WARN] scripts/validate-slides.sh 不可執行，請執行: chmod +x scripts/validate-slides.sh"
       fi
-    done
-
-    echo "[OK] Demo 2 重置完成"
-    ;;
-
-  status)
-    if grep -q "$INJECTION_MARKER" "$SLIDES_FILE" 2>/dev/null; then
-      echo "[STATUS] 違規內容已植入："
-      grep -n "$INJECTION_MARKER" "$SLIDES_FILE"
     else
-      echo "[STATUS] slides.md 乾淨，無植入違規"
+      echo "[FAIL] scripts/validate-slides.sh 不存在"
+      ERRORS=$((ERRORS + 1))
+    fi
+
+    echo ""
+    if [ "$ERRORS" -eq 0 ]; then
+      echo "[OK] 所有 Hooks 設定檢查通過，Demo 1 準備就緒"
+    else
+      echo "[FAIL] 有 $ERRORS 個問題需要修正"
+      exit 1
     fi
     ;;
 
   *)
-    echo "Usage: $0 {inject|reset|status}"
+    echo "Usage: $0 {reset|check}"
     echo ""
-    echo "  inject   在 slides.md 植入刻意違規（> 適合 90 分鐘場次）"
-    echo "  reset    移除違規，還原 slides.md 到乾淨狀態"
-    echo "  status   檢查目前是否有違規植入"
+    echo "  reset    清除 slides.md 的違規內容（含 demo2 遺留）"
+    echo "  check    驗證 hooks 設定是否正確存在"
     echo ""
-    echo "Skill 檔案位置: .claude/skills/slide-review/SKILL.md"
+    echo "相關檔案："
+    echo "  .claude/settings.json     — Hooks 設定"
+    echo "  scripts/validate-slides.sh — PostToolUse 驗證腳本"
     exit 1
     ;;
 esac

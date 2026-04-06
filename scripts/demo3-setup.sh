@@ -1,94 +1,97 @@
 #!/usr/bin/env bash
-# Demo 3 Setup: Hooks 自動化守衛
-# 用途：確保 Demo 3 的環境就緒（hooks 設定、slides.md 乾淨）
+# Demo 2 Setup: MCP 跨工具協作
+# 用途：展示 MCP 設定並驗證 GitHub MCP 連線
 #
 # 使用方式：
-#   ./scripts/demo3-setup.sh reset    # 確保 slides.md 乾淨（清除 demo2 injection）
-#   ./scripts/demo3-setup.sh check    # 驗證 hooks 設定是否正確
+#   ./scripts/demo2-setup.sh show      # 展示 MCP 設定內容
+#   ./scripts/demo2-setup.sh check     # 檢查 GitHub Token 並驗證 API 連線
 
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 SETTINGS_FILE="$REPO_DIR/.claude/settings.json"
-SLIDES_FILE="$REPO_DIR/slides.md"
-VALIDATE_SCRIPT="$REPO_DIR/scripts/validate-slides.sh"
 
 case "${1:-help}" in
-  reset)
-    # Step 1: Clean up any demo2 injection leftover
-    echo "=== 清理 Demo 2 遺留 ==="
-    bash "$REPO_DIR/scripts/demo2-setup.sh" reset
-
-    # Step 2: Run validate-slides.sh to confirm slides.md is clean
-    echo ""
-    echo "=== 驗證 slides.md 狀態 ==="
-    if bash "$VALIDATE_SCRIPT"; then
-      echo "[OK] slides.md 已乾淨，Demo 3 可以開始"
+  show)
+    echo "--- MCP 設定 (from .claude/settings.json) ---"
+    if command -v jq &> /dev/null; then
+      jq '.mcpServers' "$SETTINGS_FILE"
     else
-      echo "[WARN] slides.md 仍有違規內容，請手動檢查"
-      exit 1
+      cat "$SETTINGS_FILE"
     fi
+    echo ""
+    echo "說明："
+    echo "  GitHub MCP Server 讓 AI 能直接查詢 GitHub API"
+    echo "  包括：Issue 列表、PR 資訊、Branch 管理等"
     ;;
 
   check)
-    echo "=== 檢查 Hooks 設定 ==="
-    ERRORS=0
+    PASS=true
 
-    # Check settings.json exists
-    if [ ! -f "$SETTINGS_FILE" ]; then
-      echo "[FAIL] .claude/settings.json 不存在"
-      ERRORS=$((ERRORS + 1))
+    # Step 1: 檢查 Token 是否存在
+    echo "=== GitHub API 預檢 ==="
+    echo ""
+    if [ -n "${GITHUB_TOKEN:-}" ]; then
+      echo "[OK] GITHUB_TOKEN 已設定"
+      echo "     Token 前 8 字元: ${GITHUB_TOKEN:0:8}..."
     else
-      echo "[OK] .claude/settings.json 存在"
-
-      # Check PostToolUse hook for slides validation
-      if grep -q "post-slides-validate.sh" "$SETTINGS_FILE"; then
-        echo "[OK] PostToolUse hook: post-slides-validate.sh 已設定"
-      else
-        echo "[FAIL] PostToolUse hook: 找不到 post-slides-validate.sh"
-        ERRORS=$((ERRORS + 1))
-      fi
-
-      # Check PreToolUse hook for slides.md time blocking
-      if grep -q "BLOCKED.*Time information" "$SETTINGS_FILE" || grep -q "pre-slides-guard" "$SETTINGS_FILE"; then
-        echo "[OK] PreToolUse hook: slides.md 時間攔截已設定"
-      else
-        echo "[FAIL] PreToolUse hook: 找不到 slides.md 時間攔截設定"
-        ERRORS=$((ERRORS + 1))
-      fi
-    fi
-
-    # Check validate-slides.sh exists and is executable
-    if [ -f "$VALIDATE_SCRIPT" ]; then
-      echo "[OK] scripts/validate-slides.sh 存在"
-      if [ -x "$VALIDATE_SCRIPT" ]; then
-        echo "[OK] scripts/validate-slides.sh 可執行"
-      else
-        echo "[WARN] scripts/validate-slides.sh 不可執行，請執行: chmod +x scripts/validate-slides.sh"
-      fi
-    else
-      echo "[FAIL] scripts/validate-slides.sh 不存在"
-      ERRORS=$((ERRORS + 1))
+      echo "[FAIL] GITHUB_TOKEN 未設定"
+      echo ""
+      echo "  請設定環境變數："
+      echo "    export GITHUB_TOKEN=ghp_your_token_here"
+      echo ""
+      echo "  或使用 gh auth token 取得："
+      echo '    export GITHUB_TOKEN=$(gh auth token)'
+      PASS=false
     fi
 
     echo ""
-    if [ "$ERRORS" -eq 0 ]; then
-      echo "[OK] 所有 Hooks 設定檢查通過，Demo 3 準備就緒"
+
+    # Step 2: 驗證 API 實際可用性
+    if [ "$PASS" = true ]; then
+      echo "--- 驗證 GitHub API 連線 ---"
+      HTTP_CODE=$(curl -s -o /tmp/gh-api-check.json -w "%{http_code}" \
+        -H "Authorization: token ${GITHUB_TOKEN}" \
+        -H "Accept: application/vnd.github+json" \
+        https://api.github.com/user 2>/dev/null || echo "000")
+
+      if [ "$HTTP_CODE" = "200" ]; then
+        USERNAME=$(cat /tmp/gh-api-check.json | grep -o '"login":"[^"]*"' | head -1 | cut -d'"' -f4)
+        echo "[OK] API 連線成功 (HTTP $HTTP_CODE)"
+        echo "     登入身份: $USERNAME"
+      elif [ "$HTTP_CODE" = "401" ]; then
+        echo "[FAIL] Token 無效或已過期 (HTTP 401)"
+        echo "  請重新產生 Token 或執行："
+        echo '    export GITHUB_TOKEN=$(gh auth token)'
+        PASS=false
+      elif [ "$HTTP_CODE" = "000" ]; then
+        echo "[FAIL] 無法連線到 GitHub API（網路問題）"
+        echo "  請確認網路連線正常"
+        PASS=false
+      else
+        echo "[FAIL] GitHub API 回應異常 (HTTP $HTTP_CODE)"
+        cat /tmp/gh-api-check.json 2>/dev/null || true
+        PASS=false
+      fi
+      rm -f /tmp/gh-api-check.json
+    fi
+
+    echo ""
+    if [ "$PASS" = true ]; then
+      echo "=== 預檢通過：Demo 2 已就緒 ==="
     else
-      echo "[FAIL] 有 $ERRORS 個問題需要修正"
+      echo "=== 預檢失敗：請修正上述問題後重試 ==="
       exit 1
     fi
     ;;
 
   *)
-    echo "Usage: $0 {reset|check}"
+    echo "Usage: $0 {show|check}"
     echo ""
-    echo "  reset    清除 slides.md 的違規內容（含 demo2 遺留）"
-    echo "  check    驗證 hooks 設定是否正確存在"
+    echo "  show     展示 MCP 設定"
+    echo "  check    檢查 GitHub Token 並驗證 API 連線"
     echo ""
-    echo "相關檔案："
-    echo "  .claude/settings.json     — Hooks 設定"
-    echo "  scripts/validate-slides.sh — PostToolUse 驗證腳本"
+    echo "注意：MCP 設定已整合在 .claude/settings.json 中，隨 repo 一起管理。"
     exit 1
     ;;
 esac

@@ -21,10 +21,9 @@ scripts/
   validate-slides.sh    # slides.md 品質掃描
   demo-prepare.sh       # 演講前一鍵準備
   demo-reset-all.sh     # 全部 Demo 還原
-  demo2-setup.sh        # Demo 2: slide-review 違規注入/還原
-  demo3-setup.sh        # Demo 3: hooks 環境驗證/還原
-  demo4-setup.sh        # Demo 4: MCP GitHub 設定
-  demo5-setup.sh        # Demo 6: OpenSpec reset/check
+  demo1-setup.sh        # Demo 1: slide-review 違規注入/還原
+  demo2-setup.sh        # Demo 2: hooks 環境驗證/還原
+  demo3-setup.sh        # Demo 3: MCP GitHub 設定
 ```
 
 ## File Ownership（嚴格執行）
@@ -56,11 +55,10 @@ scripts/
 
 | Demo | Part | 工具 | 目標 |
 |------|------|------|------|
-| Demo 2 | Part 4 | `slide-review` skill | 審查 slides.md 品質 |
-| Demo 3 | Part 5 | PostToolUse / PreToolUse hooks | 守護 slides.md 內容 |
-| Demo 4 | Part 6 | GitHub MCP | 查詢 GitHub Issues |
-| Demo 5 | Part 7 | `.claude/agents/`（presentation-reviewer）| 展示 Subagents 分工 |
-| Demo 6 | Part 8 | `opsx:propose` + `opsx:apply` | OpenSpec 規格驅動開發 |
+| Demo 1 | Part 4 | `slide-review` skill | 審查 slides.md 品質 |
+| Demo 2 | Part 5 | PostToolUse / PreToolUse hooks | 守護 slides.md 內容 |
+| Demo 3 | Part 6 | GitHub MCP | 查詢 GitHub Issues |
+| Demo 4 | Part 7 | `.claude/agents/`（presentation-reviewer）| 展示 Subagents 分工 |
 
 ## Skills 規範
 - Skill 定義放在 `.claude/skills/<name>/SKILL.md`（子目錄格式，非單一檔案）
