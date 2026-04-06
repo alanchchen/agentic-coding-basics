@@ -19,6 +19,10 @@ if [ ! -f "$SLIDES_FILE" ]; then
   exit 1
 fi
 
+# Strip HTML comments (<!-- ... -->, possibly multi-line) before scanning.
+# This prevents speaker notes embedded in comments from triggering false positives.
+STRIPPED_CONTENT=$(perl -0777 -pe 's/<!--.*?-->//gs' "$SLIDES_FILE")
+
 FOUND_VIOLATIONS=0
 IN_CODE_BLOCK=0
 
@@ -77,7 +81,7 @@ while IFS= read -r line || [ -n "$line" ]; do
     FOUND_VIOLATIONS=1
   fi
 
-done < "$SLIDES_FILE"
+done <<< "$STRIPPED_CONTENT"
 
 if [ "$FOUND_VIOLATIONS" -eq 1 ]; then
   echo ""

@@ -13,7 +13,7 @@ ALWAYS use this skill when:
 
 ## Context
 
-投影片 (`slides.md`) 是面向觀眾的內容。以下資訊屬於講者稿 (`scripts.md`) 或內部文件，**絕對不能**出現在投影片上：
+投影片 (`slides.md`) 是面向觀眾的內容。以下資訊屬於講者稿（內嵌在 `slides.md` 的 `<!-- -->` HTML comment 區塊中）或內部文件，**絕對不能**出現在投影片的可見內容上：
 
 1. **時間資訊** — 場次長度、段落時間分配等（例如 `90 分鐘`、`5 min`、`小時`）
 2. **受眾標籤** — 明確標示目標聽眾的文字（例如 `軟體工程師`、`Team Lead`、`Tech Lead`）
@@ -24,7 +24,7 @@ ALWAYS use this skill when:
 2. **Scan** every line for forbidden patterns:
    - Time information: any match of `\d+\s*min`, `分鐘`, `小時`, `\d+\s*分`, `場次`, `時間分配`
    - Audience labels: `軟體工程師`, `Team Lead`, `Tech Lead`, `工程師 /`, `適合.*工程師`
-3. **Skip** lines inside code blocks (``` fenced blocks) — code examples may legitimately contain these patterns
+3. **Skip** lines inside code blocks (``` fenced blocks) and HTML comment blocks (`<!-- ... -->`) — code examples may legitimately contain these patterns, and HTML comments contain speaker notes
 4. **Compile** a structured violation report
 5. **Suggest** specific fixes for each violation
 

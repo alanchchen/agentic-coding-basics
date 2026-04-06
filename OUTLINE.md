@@ -18,7 +18,7 @@
 - **Claude Code 是什麼**：跑在終端機裡的 CLI 工具，不是網頁聊天介面。它能讀你的檔案、執行指令、寫入程式碼——在你的本機環境裡直接動手。
 - **與 Chat UI 最大的差異**：Chat UI 每次對話都是空白記憶。Claude Code 能讀取 Repo 裡的設定檔，讓 AI 帶著專案知識醒來。
 - **`.claude/` 目錄**：Claude Code 的設定家目錄。這裡放的東西，決定 AI 在這個專案裡的行為、記憶、技能與守衛。它是一份跟著 Git 走的「AI 行為合約」。
-- **破冰示意**：用一張圖對比「Chat UI 的對話泡泡」vs「Claude Code 讀取 Repo 的實際畫面」，建立視覺錨點。
+- **破冰示意**：用文字對比表格呈現「Chat UI」vs「Claude Code」的核心差異（記憶、Context、一致性），建立視覺錨點。
 
 ---
 
@@ -78,7 +78,7 @@
 
 - **MCP 核心概念**：Model Context Protocol，讓 AI 具備「特務」身分，主動連接 GitHub、Database、Monitoring 等外部系統。
 - **為什麼重要**：AI 不再只能看 Codebase，能讀取 Issue、查詢 DB、觀察 Metrics，形成完整的情境感知。
-- **三種 Scope**：`local`（預設，只限當前專案）、`project`（.mcp.json 進 Git，團隊共享）、`user`（~/.claude/，跨所有專案）。
+- **三種 Scope**：`local`（僅本機使用者可見，存於 `~/.claude/settings.json`）、`project`（存於 `.claude/settings.json` 進 Git，團隊共享）、`user`（存於 `~/.claude.json`，跨機器跨專案可用）。
 - **案例分享**：GitHub MCP 串接，AI 自動讀取 Issue 並對應代碼變更。
 - **【Demo】GitHub MCP 跨工具協作**（約 3 分鐘）：
   - 透過 GitHub MCP 查詢近期的 Open Issue 清單。

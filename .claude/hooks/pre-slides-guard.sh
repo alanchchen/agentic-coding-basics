@@ -35,7 +35,7 @@ if echo "$CHECK_TEXT" | grep -qE '[0-9]+\s*(分鐘|min\b|小時|hour)'; then
   echo "BLOCKED: Time information not allowed in slides.md"
   echo ""
   echo "偵測到時間相關內容即將寫入投影片。"
-  echo "時間資訊應放在講者稿 (scripts.md)，不應出現在投影片上。"
+  echo "時間資訊應放在講者稿（slides.md 的 HTML comment 區塊），不應出現在投影片可見內容中。"
   exit 2
 fi
 
@@ -44,7 +44,7 @@ if echo "$CHECK_TEXT" | grep -qE '(軟體工程師|Team Lead|Tech Lead)'; then
   echo "BLOCKED: Audience labels not allowed in slides.md"
   echo ""
   echo "偵測到受眾標籤即將寫入投影片。"
-  echo "受眾資訊屬於內部文件，不應出現在投影片上。"
+  echo "受眾資訊屬於內部文件，不應出現在投影片可見內容中。"
   exit 2
 fi
 
