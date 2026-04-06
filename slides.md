@@ -1555,10 +1555,86 @@ layout: section
 > 過場：直接翻頁。
 -->
 ---
+layout: two-cols
+---
+
+# 什麼是 Subagents？
+
+<div class="mt-2 opacity-70">定義在 <code>.claude/agents/</code> 的角色專屬 Agent</div>
+
+<div class="mt-6 space-y-4">
+
+<div v-click class="p-4 rounded-lg border border-slate/30 bg-slate/5">
+  <div class="font-bold mb-1">自動委派</div>
+  <div class="text-sm opacity-80">主 agent 識別任務後，自動將工作委派給合適的 subagent 執行，再回傳結果</div>
+</div>
+
+<div v-click class="p-4 rounded-lg border border-slate/30 bg-slate/5">
+  <div class="font-bold mb-1">獨立 Context</div>
+  <div class="text-sm opacity-80">每個 subagent 擁有獨立的對話記憶，不共享主 agent 的 context</div>
+</div>
+
+<div v-click class="p-4 rounded-lg border border-slate/30 bg-slate/5">
+  <div class="font-bold mb-1">一層委派限制</div>
+  <div class="text-sm opacity-80">Subagent 不能再生成子 subagent，委派鏈最多一層</div>
+</div>
+
+</div>
+
+::right::
+
+<div v-click class="mt-12 ml-4">
+
+<div class="font-bold mb-3 text-sm opacity-60">YAML frontmatter 定義方式</div>
+
+```yaml
+---
+name: code-reviewer
+description: 專門負責 code review，發現潛在問題
+model: opus
+tools: Read, Glob, Grep
+---
+```
+
+<div class="mt-4 text-sm opacity-70 space-y-1">
+  <div>• <code>name</code>：agent 識別名稱</div>
+  <div>• <code>description</code>：觸發條件說明</div>
+  <div>• <code>model</code>：指定使用的模型</div>
+  <div>• <code>tools</code>：允許使用的工具清單</div>
+</div>
+
+<div class="mt-4 text-sm opacity-60">frontmatter 之後接系統提示，定義 agent 的行為與約束</div>
+
+</div>
+
+<!--
+**時間：~1 分 30 秒**
+
+Subagents 是什麼？簡單說：定義在 `.claude/agents/` 目錄下的角色專屬 Agent。
+
+> [v-click 1] 第一個特色：自動委派。
+
+主 agent 接到任務後，會根據任務性質，自動找到對應的 subagent 並委派出去，subagent 執行完畢後把結果回傳給主 agent。整個過程不需要人工干預。
+
+> [v-click 2] 第二個特色：獨立 Context。
+
+每個 subagent 都有自己的對話記憶，不會看到主 agent 之前說了什麼。這個設計很關鍵——它確保 subagent 用全新視角執行任務，不會被之前的討論污染。
+
+> [v-click 3] 第三個特色：一層委派限制。
+
+Subagent 不能再生成子 subagent。這是設計上的安全限制，避免委派鏈失控。
+
+> [v-click 4] 右側：定義方式。
+
+定義一個 subagent 很簡單：YAML frontmatter 指定名稱、描述、模型與工具，frontmatter 之後就是這個 agent 的系統提示。
+
+> 過場：知道什麼是 subagents 之後，讓我們來看為什麼要把 Planner 和 Engineer 拆開。
+-->
+---
 
 # Subagents：讓 AI 具備「專家大腦」
 
-<div class="mt-4 opacity-70">為什麼 Planner 與 Engineer 必須分開？</div>
+<div class="mt-4 opacity-70">為什麼要分多個 Agents？以 Planner、Engineer、QA 為例</div>
 
 <div class="grid grid-cols-3 gap-4 mt-6">
 
@@ -1603,7 +1679,7 @@ layout: section
 
 （副標題問題）
 
-為什麼 Planner 與 Engineer 必須分開？
+為什麼要分多個 Agents？用 Planner、Engineer、QA 來說明。
 
 > [v-click 1-3] 依序點擊三個 Agent 卡片
 
@@ -1814,6 +1890,61 @@ layout: section
 -->
 ---
 
+# OpenSpec：名詞解釋
+
+<div class="text-sm opacity-60 mb-6">官方網站：<a href="https://openspec.dev/" class="underline">openspec.dev</a></div>
+
+<div class="grid grid-cols-2 gap-6 mt-2">
+
+<div v-click class="p-5 rounded-lg border-2 border-blue/40 bg-blue/5">
+  <div class="flex items-center gap-2 mb-3">
+    <span class="text-2xl">📄</span>
+    <h3 class="font-bold text-lg">Spec</h3>
+  </div>
+  <p class="text-sm opacity-80 mb-3">描述系統<b>目前行為</b>的規格文件，是人機之間的事實來源。</p>
+  <ul class="text-xs space-y-1 opacity-70">
+    <li>以領域組織（如 <code>auth/</code>、<code>payments/</code>）</li>
+    <li>描述可觀測行為：輸入、輸出、錯誤條件</li>
+    <li>用 MUST / SHOULD / MAY 標示規格強度</li>
+    <li>包含 Given / When / Then 情境範例</li>
+  </ul>
+</div>
+
+<div v-click class="p-5 rounded-lg border-2 border-green/40 bg-green/5">
+  <div class="flex items-center gap-2 mb-3">
+    <span class="text-2xl">🔄</span>
+    <h3 class="font-bold text-lg">Change</h3>
+  </div>
+  <p class="text-sm opacity-80 mb-3">一個<b>提案中的變更</b>，包含理解與實作所需的一切。</p>
+  <ul class="text-xs space-y-1 opacity-70">
+    <li>存放於 <code>openspec/changes/</code> 的自成一體資料夾</li>
+    <li>包含：Proposal、Design、Tasks、Delta Spec</li>
+    <li>完成後歸檔，Delta 合併回主 Spec</li>
+    <li>保留完整脈絡：意圖、設計決策、實作步驟</li>
+  </ul>
+</div>
+
+</div>
+
+<!--
+（介紹 OpenSpec 的兩個核心名詞）
+
+在看四個 Skills 怎麼用之前，先把兩個核心名詞搞清楚。
+
+> [v-click 1] Spec
+
+**Spec** 是描述系統目前行為的規格文件。它是事實來源——不是 roadmap，不是需求文件，而是「系統現在是怎麼運作的」的白紙黑字。用 MUST/SHOULD/MAY 標示強度，用 Given/When/Then 寫可測試的情境。
+
+> [v-click 2] Change
+
+**Change** 是一個提案中的變更，是一個自成一體的資料夾，包含所有需要的東西：Proposal 說明做什麼、Design 說明怎麼做、Tasks 是可執行的步驟清單、Delta Spec 描述這次變更對 Spec 的影響。完成之後歸檔，Delta 合併回主 Spec，留下永久記錄。
+
+**Spec 是現狀，Change 是變更提案。** 這兩個概念分清楚，整個 OpenSpec 就好理解了。
+
+> 過場：有了這兩個概念，再來看四個 Skills 如何串起整個流程。
+-->
+---
+
 # OpenSpec：四個 Skills
 
 <div class="grid grid-cols-2 gap-4 mt-4">
@@ -1830,15 +1961,15 @@ layout: section
   <div class="flex items-center gap-3 mb-2">
     <code class="px-2 py-0.5 rounded bg-green/20 text-green font-bold text-sm">propose</code>
   </div>
-  <h3 class="font-bold mb-1">一步產出完整 Proposal + Design + Tasks</h3>
-  <p class="text-sm opacity-70">從需求出發，自動生成完整的規格文件，人機在此對齊。</p>
+  <h3 class="font-bold mb-1">一步產出完整 Proposal + Design + Tasks + Spec Delta</h3>
+  <p class="text-sm opacity-70">從需求出發，自動生成完整的 Change 規格文件，人機在此對齊。</p>
 </div>
 
 <div v-click class="p-5 rounded-lg border-2 border-orange/40 bg-orange/5">
   <div class="flex items-center gap-3 mb-2">
     <code class="px-2 py-0.5 rounded bg-orange/20 text-orange font-bold text-sm">apply</code>
   </div>
-  <h3 class="font-bold mb-1">執行 spec 中的任務</h3>
+  <h3 class="font-bold mb-1">執行 Change 中的 Tasks</h3>
   <p class="text-sm opacity-70">按照已對齊的規格逐步執行，不再猜測，不再走鐘。</p>
 </div>
 
@@ -1846,8 +1977,8 @@ layout: section
   <div class="flex items-center gap-3 mb-2">
     <code class="px-2 py-0.5 rounded bg-purple/20 text-purple font-bold text-sm">archive</code>
   </div>
-  <h3 class="font-bold mb-1">歸檔已完成的 change</h3>
-  <p class="text-sm opacity-70">完成即歸檔，變更有跡可循，未來可追溯。</p>
+  <h3 class="font-bold mb-1">歸檔已完成的 Change</h3>
+  <p class="text-sm opacity-70">完成即歸檔，產生 Spec，變更有跡可循，未來可追溯。</p>
 </div>
 
 </div>
@@ -1870,81 +2001,11 @@ OpenSpec 是一套官方工具集，由四個 Skills 組成：
 
 > [v-click 3] apply
 
-**`apply`** — 執行 spec 中的任務。不是猜測你要什麼，而是按照已對齊的 Proposal 逐步執行，不走鐘，不越界。
+**`apply`** — 執行 change 中的任務。不是猜測你要什麼，而是按照已對齊的 Proposal 逐步執行，不走鐘，不越界。
 
 > [v-click 4] archive
 
 **`archive`** — 完成即歸檔。每一個 change 都有完整記錄，未來可追溯，團隊可審查。
-
-> 過場：來看看這四個步驟如何串在一起。
--->
----
-
-# OpenSpec 的核心邏輯
-
-<div class="mt-6 text-center">
-
-<div v-click class="text-2xl mb-8 opacity-80">
-  先對齊，再執行。規格是人機之間的合約。
-</div>
-
-<div class="flex items-center justify-center gap-3 mt-8 flex-wrap">
-
-<div v-click class="px-5 py-3 rounded-lg bg-blue/10 border border-blue/30 text-center min-w-28">
-  <code class="font-bold text-blue">explore</code>
-  <p class="text-xs opacity-60 mt-1">釐清問題</p>
-</div>
-
-<div v-click class="text-2xl opacity-40">→</div>
-
-<div v-click class="px-5 py-3 rounded-lg bg-green/10 border border-green/30 text-center min-w-28">
-  <code class="font-bold text-green">propose</code>
-  <p class="text-xs opacity-60 mt-1">對齊規格</p>
-</div>
-
-<div v-click class="text-2xl opacity-40">→</div>
-
-<div v-click class="px-5 py-3 rounded-lg bg-orange/10 border border-orange/30 text-center min-w-28">
-  <code class="font-bold text-orange">apply</code>
-  <p class="text-xs opacity-60 mt-1">按規執行</p>
-</div>
-
-<div v-click class="text-2xl opacity-40">→</div>
-
-<div v-click class="px-5 py-3 rounded-lg bg-purple/10 border border-purple/30 text-center min-w-28">
-  <code class="font-bold text-purple">archive</code>
-  <p class="text-xs opacity-60 mt-1">完成歸檔</p>
-</div>
-
-</div>
-
-<div v-click class="mt-10 p-4 bg-primary/10 border border-primary/30 rounded-lg max-w-lg mx-auto">
-  <p class="font-bold">先建立底線（確定性），再追求加速（機率性）。</p>
-</div>
-
-</div>
-
-
-<!--
-**時間：~2 分鐘**
-
-> [v-click 1] 核心觀點
-
-**先對齊，再執行。規格是人機之間的合約。**
-
-這句話和我們一開始說的 CLAUDE.md 呼應——CLAUDE.md 是「長期合約」，OpenSpec 的 Proposal 是「每次任務的短期合約」。
-
-> [v-click 2-5] 四個步驟依序出現
-
-`explore` → `propose` → `apply` → `archive`
-
-每一步都有確定性：你知道 AI 做了什麼、為什麼做、做完了什麼。
-
-> [v-click 6] 金句卡片
-
-**先建立底線（確定性），再追求加速（機率性）。**
-
-OpenSpec 讓你把「對齊」這件事變成確定性步驟，再讓 AI 在清晰的邊界內加速執行。
 
 > 過場：理論夠了，我們來看真實的操作。
 -->
